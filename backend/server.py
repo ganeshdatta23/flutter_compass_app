@@ -145,17 +145,29 @@ async def update_swamiji_location(location_update: LocationUpdate):
             'latitude': location_update.latitude,
             'longitude': location_update.longitude,
             'address': location_update.address,
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.utcnow()
         }
         
-        result = supabase.table('locations').upsert(update_data).execute()
-        
-        if not result.data:
-            raise HTTPException(status_code=500, detail="Failed to update location")
-        
-        location_data = result.data[0]
-        if isinstance(location_data['updated_at'], str):
-            location_data['updated_at'] = datetime.fromisoformat(location_data['updated_at'].replace('Z', '+00:00'))
+        if USE_SUPABASE:
+            # Use Supabase
+            supabase_data = update_data.copy()
+            supabase_data['updated_at'] = supabase_data['updated_at'].isoformat()
+            result = supabase.table('locations').upsert(supabase_data).execute()
+            
+            if not result.data:
+                raise HTTPException(status_code=500, detail="Failed to update location")
+            
+            location_data = result.data[0]
+            if isinstance(location_data['updated_at'], str):
+                location_data['updated_at'] = datetime.fromisoformat(location_data['updated_at'].replace('Z', '+00:00'))
+        else:
+            # Use MongoDB fallback
+            await db.locations.replace_one(
+                {'id': 'swamiji_location'}, 
+                update_data, 
+                upsert=True
+            )
+            location_data = update_data
         
         return LocationData(**location_data)
         
