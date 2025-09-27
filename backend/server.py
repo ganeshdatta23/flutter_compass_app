@@ -41,6 +41,19 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class LocationData(BaseModel):
+    id: str
+    latitude: float
+    longitude: float
+    address: Optional[str] = None
+    googlemapsurl: Optional[str] = None
+    updated_at: datetime
+
+class LocationUpdate(BaseModel):
+    latitude: float
+    longitude: float
+    address: Optional[str] = None
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
