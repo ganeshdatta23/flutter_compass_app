@@ -101,22 +101,31 @@ export function useCompass() {
           }));
         }
 
-        // Start device motion (compass) updates
-        const isAvailable = await DeviceMotion.isAvailableAsync();
+        // Start magnetometer (compass) updates
+        const isAvailable = await Magnetometer.isAvailableAsync();
         if (isAvailable) {
-          DeviceMotion.setUpdateInterval(100); // Update every 100ms
-          motionSubscription.current = DeviceMotion.addListener((motionData) => {
+          Magnetometer.setUpdateInterval(100); // Update every 100ms
+          motionSubscription.current = Magnetometer.addListener((magnetometerData) => {
             if (!mounted) return;
             
-            // Extract heading from device motion
-            // Note: This is a simplified approach. In production, you might want to use
-            // expo-sensors Magnetometer for more accurate compass readings
-            const { rotation } = motionData;
-            if (rotation) {
-              const heading = ((rotation.gamma || 0) * 180 / Math.PI + 360) % 360;
-              setCompassData(prev => ({ ...prev, heading }));
-            }
+            // Calculate heading from magnetometer data
+            const { x, y } = magnetometerData;
+            let heading = Math.atan2(y, x) * (180 / Math.PI);
+            // Normalize to 0-360 degrees
+            heading = (heading + 360) % 360;
+            setCompassData(prev => ({ ...prev, heading }));
           });
+        } else {
+          // Fallback: simulate compass for testing (slowly rotating)
+          let simulatedHeading = 0;
+          const simulationInterval = setInterval(() => {
+            if (!mounted) return;
+            simulatedHeading = (simulatedHeading + 1) % 360;
+            setCompassData(prev => ({ ...prev, heading: simulatedHeading }));
+          }, 100);
+          
+          // Store interval for cleanup
+          motionSubscription.current = { remove: () => clearInterval(simulationInterval) };
         }
 
         setCompassData(prev => ({ ...prev, isLoading: false }));
