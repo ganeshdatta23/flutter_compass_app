@@ -185,15 +185,27 @@ async def initialize_default_location():
             'longitude': 76.645467,
             'address': 'Avadhoota Datta Peetham',
             'googlemapsurl': 'https://maps.google.com/?q=12.308367,76.645467',
-            'updated_at': datetime.utcnow().isoformat()
+            'updated_at': datetime.utcnow()
         }
         
-        result = supabase.table('locations').upsert(default_location).execute()
-        
-        if not result.data:
-            raise HTTPException(status_code=500, detail="Failed to initialize location")
-        
-        return {"message": "Default location initialized successfully", "location": result.data[0]}
+        if USE_SUPABASE:
+            # Use Supabase
+            supabase_data = default_location.copy()
+            supabase_data['updated_at'] = supabase_data['updated_at'].isoformat()
+            result = supabase.table('locations').upsert(supabase_data).execute()
+            
+            if not result.data:
+                raise HTTPException(status_code=500, detail="Failed to initialize location")
+            
+            return {"message": "Default location initialized successfully", "location": result.data[0]}
+        else:
+            # Use MongoDB fallback
+            await db.locations.replace_one(
+                {'id': 'swamiji_location'}, 
+                default_location, 
+                upsert=True
+            )
+            return {"message": "Default location initialized successfully (MongoDB fallback)", "location": default_location}
         
     except Exception as e:
         logger.error(f"Error initializing default location: {e}")
