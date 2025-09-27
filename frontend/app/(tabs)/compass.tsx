@@ -120,7 +120,7 @@ export default function CompassScreen() {
       <View style={styles.compassContainer}>
         <CompassWidget
           heading={heading}
-          targetBearing={0} // This will be calculated in the compass widget based on bearing data
+          targetBearing={bearingData?.bearing || 0}
           isAligned={isAligned}
           turnDirection={turnDirection}
           turnAngle={turnAngle}
