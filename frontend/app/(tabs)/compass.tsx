@@ -19,6 +19,7 @@ export default function CompassScreen() {
     heading,
     userLocation,
     targetLocation,
+    bearingData,
     isAligned,
     turnDirection,
     turnAngle,
