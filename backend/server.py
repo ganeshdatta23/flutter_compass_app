@@ -50,6 +50,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Try to create Supabase client, fallback to MongoDB if DNS fails
+try:
+    supabase: Client = create_client(supabase_url, supabase_key)
+    # Test connection
+    import socket
+    socket.gethostbyname('kpqwrcjtubmuxcegltty.supabase.co')
+    USE_SUPABASE = True
+    logger.info("Supabase connection established")
+except Exception as e:
+    logger.warning(f"Supabase connection failed, using MongoDB fallback: {e}")
+    supabase = None
+    USE_SUPABASE = False
+
 
 # Define Models
 class StatusCheck(BaseModel):
