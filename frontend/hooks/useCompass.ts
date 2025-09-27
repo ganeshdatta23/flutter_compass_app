@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { DeviceMotion } from 'expo-sensors';
+import { Magnetometer } from 'expo-sensors';
 import * as Haptics from 'expo-haptics';
 import { LocationService, UserLocation, BearingData } from '../services/locationService';
 import { SupabaseService, LocationData } from '../services/supabaseService';
