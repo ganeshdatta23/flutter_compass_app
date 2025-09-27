@@ -213,15 +213,14 @@ export function useCompass() {
           setCompassData(prev => ({ ...prev, userLocation: location }));
         });
         
-        // Resume motion updates
-        DeviceMotion.isAvailableAsync().then((isAvailable) => {
+        // Resume magnetometer updates
+        Magnetometer.isAvailableAsync().then((isAvailable) => {
           if (isAvailable && !motionSubscription.current) {
-            motionSubscription.current = DeviceMotion.addListener((motionData) => {
-              const { rotation } = motionData;
-              if (rotation) {
-                const heading = ((rotation.gamma || 0) * 180 / Math.PI + 360) % 360;
-                setCompassData(prev => ({ ...prev, heading }));
-              }
+            motionSubscription.current = Magnetometer.addListener((magnetometerData) => {
+              const { x, y } = magnetometerData;
+              let heading = Math.atan2(y, x) * (180 / Math.PI);
+              heading = (heading + 360) % 360;
+              setCompassData(prev => ({ ...prev, heading }));
             });
           }
         });
