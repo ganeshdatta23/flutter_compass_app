@@ -95,26 +95,33 @@ async def get_status_checks():
 async def get_swamiji_location():
     """Get Swamiji's current location"""
     try:
-        result = supabase.table('locations').select('*').eq('id', 'swamiji_location').execute()
+        if USE_SUPABASE:
+            result = supabase.table('locations').select('*').eq('id', 'swamiji_location').execute()
+            
+            if result.data:
+                location_data = result.data[0]
+                # Convert string to datetime if needed
+                if isinstance(location_data['updated_at'], str):
+                    location_data['updated_at'] = datetime.fromisoformat(location_data['updated_at'].replace('Z', '+00:00'))
+                return LocationData(**location_data)
+        else:
+            # Use MongoDB fallback
+            location_data = await db.locations.find_one({'id': 'swamiji_location'})
+            if location_data:
+                # Remove MongoDB _id field
+                location_data.pop('_id', None)
+                return LocationData(**location_data)
         
-        if not result.data:
-            # Return default location if not found
-            default_location = {
-                'id': 'swamiji_location',
-                'latitude': 12.308367,
-                'longitude': 76.645467,
-                'address': 'Avadhoota Datta Peetham',
-                'googlemapsurl': None,
-                'updated_at': datetime.utcnow().isoformat()
-            }
-            return LocationData(**default_location)
-        
-        location_data = result.data[0]
-        # Convert string to datetime if needed
-        if isinstance(location_data['updated_at'], str):
-            location_data['updated_at'] = datetime.fromisoformat(location_data['updated_at'].replace('Z', '+00:00'))
-        
-        return LocationData(**location_data)
+        # Return default location if not found
+        default_location = {
+            'id': 'swamiji_location',
+            'latitude': 12.308367,
+            'longitude': 76.645467,
+            'address': 'Avadhoota Datta Peetham',
+            'googlemapsurl': None,
+            'updated_at': datetime.utcnow()
+        }
+        return LocationData(**default_location)
         
     except Exception as e:
         logger.error(f"Error fetching Swamiji location: {e}")
