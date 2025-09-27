@@ -24,19 +24,6 @@ db = client[os.environ['DB_NAME']]
 supabase_url = "https://kpqwrcjtubmuxcegltty.supabase.co"
 supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwcXdyY2p0dWJtdXhjZWdsdHR5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwMzI1MjMsImV4cCI6MjA2MzYwODUyM30.y84yzzcxaevq9VDDEfFG7wo1-OHnlbm2OHM-KQQ1aLo"
 
-# Try to create Supabase client, fallback to MongoDB if DNS fails
-try:
-    supabase: Client = create_client(supabase_url, supabase_key)
-    # Test connection
-    import socket
-    socket.gethostbyname('kpqwrcjtubmuxcegltty.supabase.co')
-    USE_SUPABASE = True
-    logger.info("Supabase connection established")
-except Exception as e:
-    logger.warning(f"Supabase connection failed, using MongoDB fallback: {e}")
-    supabase = None
-    USE_SUPABASE = False
-
 # Create the main app without a prefix
 app = FastAPI()
 
