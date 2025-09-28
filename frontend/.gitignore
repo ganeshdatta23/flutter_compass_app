@@ -5,9 +5,15 @@ node_modules/
 
 # Expo
 .expo/
+.expo-shared/
 dist/
 web-build/
 expo-env.d.ts
+
+# Metro
+.metro-cache/
+metro-cache/
+.metro-health-check*
 
 # Native
 .kotlin/
@@ -18,8 +24,22 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
-# Metro
-.metro-health-check*
+# Android
+android/app/build/
+android/app/.cxx/
+android/.gradle/
+android/build/
+android/local.properties
+*.keystore
+debug.keystore
+
+# iOS
+ios/build/
+ios/Pods/
+ios/*.xcworkspace
+ios/*.xcodeproj/xcuserdata
+ios/*.xcodeproj/project.xcworkspace/xcuserdata
+ios/Podfile.lock
 
 # debug
 npm-debug.*
@@ -30,10 +50,46 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
+# Environment files
+.env
+.env.local
 .env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # typescript
 *.tsbuildinfo
+
+# Build outputs
+build/
+dist/
+web-build/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+# EAS
+.easignore
 
 app-example
