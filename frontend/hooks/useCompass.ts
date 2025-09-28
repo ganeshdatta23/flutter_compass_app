@@ -70,8 +70,8 @@ export function useCompass() {
           // Use default location if not found in database
           const defaultLocation: LocationData = {
             id: 'swamiji_location',
-            latitude: 12.308367,
-            longitude: 76.645467,
+            latitude: 12.308367, // Example: Mysore as Default
+            longitude: 76.645467, // Example: Mysore as Default
             address: 'Avadhoota Datta Peetham',
             updated_at: new Date().toISOString(),
           };
